@@ -1,0 +1,124 @@
+{
+  "version": "v1",
+  "suite_path": "/mnt/nvme1/chris/rerank-mini/eval_locked/suite_v1.json",
+  "suite_sha256": "82476db7cbfcda33c5d5035498b54f7200c7d6521687d6579989ccc0700fc329",
+  "created_utc": "2026-11-24T22:41:23.330781+00:00",
+  "pillars": {
+    "beir": {
+      "NanoMSMARCO": {
+        "num_queries": 50,
+        "num_unique_docs": 3398,
+        "top_k": 100,
+        "median_doc_words": 50,
+        "bm25_ndcg10": 0.473167,
+        "bm25_recall_at_k": 0.96
+      },
+      "NanoNFCorpus": {
+        "num_queries": 50,
+        "num_unique_docs": 1939,
+        "top_k": 100,
+        "median_doc_words": 230,
+        "bm25_ndcg10": 0.32803,
+        "bm25_recall_at_k": 0.206487
+      },
+      "NanoFiQA2018": {
+        "num_queries": 50,
+        "num_unique_docs": 2668,
+        "top_k": 100,
+        "median_doc_words": 162,
+        "bm25_ndcg10": 0.331722,
+        "bm25_recall_at_k": 0.627944
+      },
+      "NanoSciFact": {
+        "num_queries": 50,
+        "num_unique_docs": 2291,
+        "top_k": 100,
+        "median_doc_words": 200,
+        "bm25_ndcg10": 0.719728,
+        "bm25_recall_at_k": 0.88
+      },
+      "NanoNQ": {
+        "num_queries": 50,
+        "num_unique_docs": 3040,
+        "top_k": 100,
+        "median_doc_words": 90,
+        "bm25_ndcg10": 0.451132,
+        "bm25_recall_at_k": 0.91
+      },
+      "NanoHotpotQA": {
+        "num_queries": 50,
+        "num_unique_docs": 2940,
+        "top_k": 100,
+        "median_doc_words": 59,
+        "bm25_ndcg10": 0.78036,
+        "bm25_recall_at_k": 0.93
+      },
+      "NanoSCIDOCS": {
+        "num_queries": 50,
+        "num_unique_docs": 1700,
+        "top_k": 100,
+        "median_doc_words": 149,
+        "bm25_ndcg10": 0.33272,
+        "bm25_recall_at_k": 0.584667
+      }
+    },
+    "code": {
+      "CoSQA": {
+        "num_queries": 200,
+        "num_unique_docs": 9873,
+        "top_k": 100,
+        "median_doc_words": 27,
+        "bm25_ndcg10": 0.1494,
+        "bm25_recall_at_k": 0.605
+      },
+      "CodeSearchNet-Python": {
+        "num_queries": 200,
+        "num_unique_docs": 973,
+        "top_k": 100,
+        "median_doc_words": 41,
+        "bm25_ndcg10": 0.576597,
+        "bm25_recall_at_k": 0.925
+      },
+      "StackOverflow-QA": {
+        "num_queries": 200,
+        "num_unique_docs": 7024,
+        "top_k": 100,
+        "median_doc_words": 207,
+        "bm25_ndcg10": 0.65502,
+        "bm25_recall_at_k": 0.855
+      }
+    },
+    "long_context": {
+      "MLDR-en": {
+        "num_queries": 150,
+        "num_unique_docs": 2825,
+        "top_k": 30,
+        "median_doc_words": 5009,
+        "bm25_ndcg10": 0.761834,
+        "bm25_recall_at_k": 0.873333
+      },
+      "LongEmbed-2WikiMQA": {
+        "num_queries": 150,
+        "num_unique_docs": 298,
+        "top_k": 30,
+        "median_doc_words": 5289,
+        "bm25_ndcg10": 0.97549,
+        "bm25_recall_at_k": 1.0
+      },
+      "LongEmbed-Needle": {
+        "num_queries": 150,
+        "num_unique_docs": 714,
+        "top_k": 30,
+        "median_doc_words": 3103,
+        "bm25_ndcg10": 0.419393,
+        "bm25_recall_at_k": 0.933333
+      }
+    }
+  },
+  "bm25_summary": {
+    "beir": 0.488123,
+    "code": 0.460339,
+    "long_context": 0.718906,
+    "overall_ndcg10": 0.555789
+  }
+}

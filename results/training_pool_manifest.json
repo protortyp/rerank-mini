@@ -1,0 +1,39 @@
+{
+  "track_b_unscored": {
+    "sources": {
+      "mldr_en_train": {
+        "queries": 9883,
+        "license": "mit",
+        "domain": "long_doc"
+      },
+      "narrativeqa_long": {
+        "queries": 9940,
+        "license": "apache-2.0",
+        "domain": "long_doc"
+      },
+      "codesearchnet_python": {
+        "queries": 24602,
+        "license": "apache-2.0",
+        "domain": "code"
+      },
+      "magicoder_oss_75k": {
+        "queries": 24996,
+        "license": "mit",
+        "domain": "code"
+      },
+      "glaive_code_qa": {
+        "queries": 19987,
+        "license": "apache-2.0",
+        "domain": "code"
+      },
+      "glaive_tool_api": {
+        "queries": 3545,
+        "license": "apache-2.0",
+        "domain": "tool_api"
+      }
+    },
+    "total_queries": 92953,
+    "total_pairs": 929530,
+    "num_shards": 19
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "num_pairs": 504,
+  "elapsed_sec": 11.83,
+  "pairs_per_sec": 42.61,
+  "pearson_r_vs_kalm_qwen3_8b": 0.97642,
+  "pos_mean_logit": 3.4208,
+  "neg_mean_logit": -6.2685,
+  "margin": 9.6893,
+  "min_logit": -13.567,
+  "max_logit": 7.0593
+}
