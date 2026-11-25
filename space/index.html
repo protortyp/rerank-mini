@@ -220,18 +220,31 @@ $("presetCode").onclick = () => loadPreset("code");
 $("presetWeb").onclick = () => loadPreset("web");
 
 const cache = {};
-async function loadPair(modelId, dtype) {
+async function detectDevice() {
+  if (!navigator.gpu) return "wasm";
+  try {
+    const adapter = await navigator.gpu.requestAdapter();
+    return adapter ? "webgpu" : "wasm";
+  } catch {
+    return "wasm";
+  }
+}
+
+async function loadPair(modelId, preferredDtype) {
   if (cache[modelId]) return cache[modelId];
-  const device = "gpu" in navigator ? "webgpu" : "wasm";
-  $("status").textContent = `Loading ${modelId} (${device})…`;
+  const device = await detectDevice();
+  const dtype = device === "webgpu" ? preferredDtype : "fp32";
+  $("status").textContent = `Loading ${modelId} (${device}, ${dtype})…`;
   const tokenizer = await AutoTokenizer.from_pretrained(modelId);
   let model;
+  let usedDevice = device;
   try {
     model = await AutoModelForSequenceClassification.from_pretrained(modelId, { device, dtype });
   } catch {
+    usedDevice = "wasm";
     model = await AutoModelForSequenceClassification.from_pretrained(modelId, { device: "wasm", dtype: "fp32" });
   }
-  cache[modelId] = { tokenizer, model, device };
+  cache[modelId] = { tokenizer, model, device: usedDevice };
   return cache[modelId];
 }
 
