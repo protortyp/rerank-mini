@@ -71,7 +71,7 @@ def main() -> int:
 set -euo pipefail
 cd /workspace
 tar -xzf bundle.tar.gz
-pip install -q -U "transformers>=4.51" "sentence-transformers>=5.0" "huggingface_hub>=0.30" pyarrow tqdm
+pip install -q -U "transformers>=4.51,<5.0" "sentence-transformers>=5.0" "huggingface_hub>=0.30,<1.0" pyarrow tqdm brotli
 
 python3 - <<'PY'
 import json, os, subprocess, sys
@@ -88,9 +88,9 @@ snapshot_download(
     repo_type="dataset",
     token=token,
     local_dir=str(data_root),
-    allow_patterns=["track_a_prescored/*.parquet", "track_b_scored/*.parquet"],
+    allow_patterns=["track_a_prescored/*.parquet", "track_b_scored/*.parquet", "track_c_scored/*.parquet"],
 )
-data_dirs = [str(p) for p in [data_root / "track_a_prescored", data_root / "track_b_scored"] if p.is_dir() and list(p.glob("*.parquet"))]
+data_dirs = [str(p) for p in [data_root / "track_a_prescored", data_root / "track_b_scored", data_root / "track_c_scored"] if p.is_dir() and list(p.glob("*.parquet"))]
 print("Using data dirs:", data_dirs, flush=True)
 
 spec = json.loads(Path("/workspace/sweep_spec.json").read_text())
@@ -99,9 +99,22 @@ for run in spec["runs"]:
     out_dir = Path("/workspace/ckpts") / name
     cmd = [sys.executable, "/workspace/train.py", "--data-dirs", *data_dirs, "--out-dir", str(out_dir)]
     for k, v in run["args"].items():
+        if k == "backbone" and isinstance(v, str) and v.startswith("staging:"):
+            sub = v.split(":", 1)[1]
+            local_bb = Path("/workspace/ckpts_in")
+            snapshot_download(
+                repo_id="{args.hf_ckpt_repo}",
+                repo_type="model",
+                token=token,
+                local_dir=str(local_bb),
+                allow_patterns=[f"{{sub}}/*"],
+            )
+            v = str(local_bb / sub)
         if isinstance(v, bool):
             if v:
                 cmd.append(f"--{{k}}")
+        elif isinstance(v, list):
+            cmd.extend([f"--{{k}}", *[str(x) for x in v]])
         else:
             cmd.extend([f"--{{k}}", str(v)])
     print(f"\\n========== RUNNING {{name}} ==========", flush=True)

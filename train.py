@@ -48,12 +48,15 @@ class GroupedRerankDataset(Dataset):
         max_samples: int | None = None,
         long_doc_upsample: int = 1,
         code_upsample: int = 1,
+        web_qa_upsample: int = 1,
+        exclude_sources: set[str] | None = None,
         min_doc_words: int = 0,
         seed: int = 42,
     ):
         self.docs_per_query = docs_per_query
         self.rng = random.Random(seed)
         self.rows: list[dict[str, Any]] = []
+        excluded = exclude_sources or set()
 
         for path in sorted(shard_paths):
             table = pq.read_table(
@@ -61,6 +64,9 @@ class GroupedRerankDataset(Dataset):
                 columns=["query", "docs", "doc_labels", "teacher_logits", "domain", "source"],
             )
             for row in table.to_pylist():
+                src = str(row.get("source", ""))
+                if src in excluded:
+                    continue
                 docs = row["docs"]
                 logits = row["teacher_logits"]
                 if not docs or not logits or len(docs) != len(logits) or len(docs) < 2:
@@ -75,6 +81,8 @@ class GroupedRerankDataset(Dataset):
                     repeat = max(1, long_doc_upsample)
                 elif domain in ("code", "tool_api"):
                     repeat = max(1, code_upsample)
+                elif domain == "web_qa":
+                    repeat = max(1, web_qa_upsample)
                 item = {
                     "query": str(row["query"]),
                     "docs": [str(d) for d in docs],
@@ -252,6 +260,8 @@ def main() -> int:
     parser.add_argument("--max-samples", type=int, default=None, help="Cap dataset queries (for smoke tests)")
     parser.add_argument("--long-doc-upsample", type=int, default=1)
     parser.add_argument("--code-upsample", type=int, default=1)
+    parser.add_argument("--web-qa-upsample", type=int, default=1)
+    parser.add_argument("--exclude-sources", type=str, nargs="*", default=[])
     parser.add_argument("--min-doc-words", type=int, default=0)
     parser.add_argument("--grad-checkpointing", action="store_true")
     parser.add_argument("--num-workers", type=int, default=4)
@@ -279,6 +289,8 @@ def main() -> int:
         max_samples=args.max_samples,
         long_doc_upsample=args.long_doc_upsample,
         code_upsample=args.code_upsample,
+        web_qa_upsample=args.web_qa_upsample,
+        exclude_sources=set(args.exclude_sources),
         min_doc_words=args.min_doc_words,
         seed=args.seed,
     )

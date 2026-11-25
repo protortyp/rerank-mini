@@ -92,11 +92,16 @@ def export_fp16(fp32_onnx: Path, fp16_onnx: Path) -> None:
 
 
 def export_int8(fp32_onnx: Path, int8_onnx: Path) -> None:
+    proto = onnx.load(str(fp32_onnx))
+    # Keep the classification head in FP32 to preserve output logit calibration.
+    head_nodes = [n.name for n in proto.graph.node if "/head/" in n.name or "/classifier/" in n.name]
     quantize_dynamic(
         model_input=str(fp32_onnx),
         model_output=str(int8_onnx),
-        weight_type=QuantType.QInt8,
+        weight_type=QuantType.QUInt8,
+        per_channel=True,
         op_types_to_quantize=["MatMul", "Gemm"],
+        nodes_to_exclude=head_nodes,
     )
 
 
@@ -147,37 +152,54 @@ def check_numerical_parity(ckpt_dir: Path, onnx_files: dict[str, Path]) -> dict[
 
 
 def maybe_export_gguf(ckpt_dir: Path, gguf_dir: Path) -> dict[str, Any]:
-    """Attempt GGUF F16 and Q8_0 export if llama.cpp converter & quantizer are installed locally."""
+    """Export GGUF F16 and Q8_0 using llama.cpp's convert_hf_to_gguf.py when available."""
+    import os
+
     conv = shutil.which("convert_hf_to_gguf.py") or shutil.which("llama-convert-hf-to-gguf")
-    quant = shutil.which("llama-quantize")
-    # Also check common local build locations.
     for cand in [
+        Path.home() / "dev" / "llama.cpp" / "convert_hf_to_gguf.py",
         Path.home() / "llama.cpp" / "convert_hf_to_gguf.py",
         Path("/usr/local/bin/convert_hf_to_gguf.py"),
     ]:
         if not conv and cand.is_file():
             conv = str(cand)
     if not conv:
-        return {"status": "skipped", "reason": "convert_hf_to_gguf.py not found in PATH"}
+        return {"status": "skipped", "reason": "convert_hf_to_gguf.py not found"}
+
+    conv_path = Path(conv).resolve()
+    env = dict(os.environ)
+    gguf_py = conv_path.parent / "gguf-py"
+    if gguf_py.is_dir():
+        extra_pp = f"{gguf_py}:{conv_path.parent}"
+        env["PYTHONPATH"] = f"{extra_pp}:{env['PYTHONPATH']}" if env.get("PYTHONPATH") else extra_pp
 
     gguf_dir.mkdir(parents=True, exist_ok=True)
     f16_path = gguf_dir / "rerank-mini-32m-f16.gguf"
     q8_path = gguf_dir / "rerank-mini-32m-q8_0.gguf"
     try:
-        cmd = [sys.executable, conv, str(ckpt_dir), "--outfile", str(f16_path), "--outtype", "f16"]
-        subprocess.run(cmd, check=True, capture_output=True, text=True)
-        info: dict[str, Any] = {
+        subprocess.run(
+            [sys.executable, str(conv_path), str(ckpt_dir), "--outfile", str(f16_path), "--outtype", "f16"],
+            check=True,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+        subprocess.run(
+            [sys.executable, str(conv_path), str(ckpt_dir), "--outfile", str(q8_path), "--outtype", "q8_0"],
+            check=True,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+        return {
             "status": "ok",
             "f16_path": str(f16_path),
             "f16_size_mb": round(f16_path.stat().st_size / (1024 * 1024), 2),
+            "q8_0_path": str(q8_path),
+            "q8_0_size_mb": round(q8_path.stat().st_size / (1024 * 1024), 2),
         }
-        if quant:
-            subprocess.run([quant, str(f16_path), str(q8_path), "Q8_0"], check=True, capture_output=True, text=True)
-            info["q8_0_path"] = str(q8_path)
-            info["q8_0_size_mb"] = round(q8_path.stat().st_size / (1024 * 1024), 2)
-        return info
     except subprocess.CalledProcessError as exc:
-        return {"status": "unsupported", "stderr": (exc.stderr or "")[-600:]}
+        return {"status": "unsupported", "stderr": (exc.stderr or "")[-800:]}
 
 
 def main() -> int:

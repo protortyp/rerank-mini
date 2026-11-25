@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rerank-mini-32m vs MiniLM-L6-v2 — Browser WebGPU Reranker</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #181817;
+    --panel: #222220;
+    --panel-2: #2a2a27;
+    --text: #f0efec;
+    --muted: #b8b6ac;
+    --line: #383834;
+    --accent: #3b82f6;
+    --ok: #22c55e;
+    --warn: #eab308;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 1160px; margin: 0 auto; padding: 28px 20px 56px; }
+  h1 { font-size: 22px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  p.lead { color: var(--muted); margin: 0 0 6px; max-width: 78ch; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .bar {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    margin: 18px 0 14px;
+  }
+  button {
+    font: inherit; color: var(--text); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 6px; padding: 7px 12px;
+    cursor: pointer;
+  }
+  button.primary {
+    background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600;
+  }
+  button:disabled { opacity: 0.45; cursor: default; }
+  .input-panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 16px; display: flex; flex-direction: column; gap: 12px;
+  }
+  label { display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  input[type=text], textarea {
+    font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--text); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; width: 100%;
+    resize: vertical;
+  }
+  .passages { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .passage-row { display: grid; grid-template-columns: 32px 1fr; gap: 8px; align-items: start; }
+  .p-idx {
+    font: 600 12px/1 ui-monospace, monospace; color: var(--muted);
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px;
+    padding: 8px 0; text-align: center;
+  }
+  #status { min-height: 1.4em; margin: 14px 0 12px; color: var(--muted); font-size: 13px; }
+  .results { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .card-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 10px;
+  }
+  .card-head h2 { font-size: 15px; margin: 0; }
+  .meta { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .rank-item {
+    display: grid; grid-template-columns: 28px 1fr 84px; gap: 10px; align-items: start;
+    padding: 8px 0; border-bottom: 1px solid #2c2c29;
+  }
+  .rank-item:last-child { border-bottom: 0; }
+  .rank-num {
+    font: 700 13px/1 ui-monospace, monospace; color: var(--muted);
+    padding-top: 2px; font-variant-numeric: tabular-nums;
+  }
+  .rank-item.top .rank-num { color: var(--ok); }
+  .rank-snippet { font-size: 13px; color: var(--text); word-break: break-word; }
+  .rank-sub { font-size: 11px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .score-col { text-align: right; font: 600 13px/1.2 ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .bar-track { height: 4px; background: var(--bg); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--accent); }
+  .rank-item.top .bar-fill { background: var(--ok); }
+  .note { color: var(--muted); font-size: 12px; margin-top: 24px; }
+  @media (max-width: 820px) { .results { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>rerank-mini-32m vs MiniLM-L6-v2</h1>
+  <p class="lead">
+    Client-side cross-encoder reranking in your browser via Transformers.js (WebGPU, fallback WASM).
+    Compare <strong>rerank-mini-32m</strong> (32M, 8,192 tokens, Apache-2.0) against
+    <code>ms-marco-MiniLM-L6-v2</code> (22.7M, 512 tokens). Nothing leaves your device.
+  </p>
+  <p class="lead">
+    <a href="https://huggingface.co/christianengel/rerank-mini-32m">Model Card</a> ·
+    <a href="https://github.com/protortyp/rerank-mini">Code &amp; Benchmarks</a>
+  </p>
+
+  <div class="bar">
+    <button type="button" id="presetLong">Preset: Long-Context Needle (&gt;900 tok)</button>
+    <button type="button" id="presetCode">Preset: Code &amp; Tool RAG</button>
+    <button type="button" id="presetWeb">Preset: Web Search QA</button>
+    <button type="button" class="primary" id="runBtn">Rerank Passages</button>
+  </div>
+
+  <section class="input-panel">
+    <label>Query
+      <input type="text" id="queryInput">
+    </label>
+    <label>Candidate Passages (5)</label>
+    <div class="passages" id="passagesBox"></div>
+  </section>
+
+  <div id="status">Ready. Click "Rerank Passages" to load both ONNX models in your browser (~150 MB cached).</div>
+
+  <section class="results">
+    <div class="card">
+      <div class="card-head">
+        <h2>rerank-mini-32m (32M, 8K tok)</h2>
+        <span class="meta" id="metaOurs">—</span>
+      </div>
+      <div id="outOurs" class="meta">Waiting to run…</div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h2>ms-marco-MiniLM-L6-v2 (22.7M, 512 tok)</h2>
+        <span class="meta" id="metaMini">—</span>
+      </div>
+      <div id="outMini" class="meta">Waiting to run…</div>
+    </div>
+  </section>
+
+  <p class="note">
+    Uses <code>@huggingface/transformers</code> (Transformers.js) with <code>AutoTokenizer</code> and
+    <code>AutoModelForSequenceClassification</code>. Scores are raw relevance logits with sigmoid probability shown below.
+    Long-context preset places the supporting fact past token 750 where 512-token MiniLM truncates.
+  </p>
+</main>
+
+<script type="module">
+import { AutoTokenizer, AutoModelForSequenceClassification, env } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4";
+
+env.allowLocalModels = false;
+
+const MODEL_OURS = "christianengel/rerank-mini-32m";
+const MODEL_MINI = "Xenova/ms-marco-MiniLM-L-6-v2";
+
+const FILLER =
+  "Quarterly infrastructure review notes covering regional load balancers, TLS certificate rotation schedules, " +
+  "object storage lifecycle policies, and routine database vacuum telemetry across staging clusters. " +
+  "No customer-facing incidents were reported during standard maintenance windows. ";
+
+const PRESETS = {
+  long: {
+    query: "What is the emergency rollback flag and timeout for the billing webhook worker?",
+    passages: [
+      FILLER.repeat(12) + " Billing service overview: webhooks are queued in Redis and dispatched asynchronously.",
+      FILLER.repeat(14) + " Operations addendum (Section 9.4): set BILLING_WEBHOOK_FORCE_ROLLBACK=true with a 45-second drain timeout before restarting the billing webhook worker.",
+      FILLER.repeat(12) + " Marketing analytics pipeline exports daily events to Parquet on S3.",
+      "Billing webhook worker architecture diagram notes: standard retries use exponential backoff up to 5 attempts.",
+      FILLER.repeat(12) + " Frontend CDN cache invalidation takes roughly 90 seconds globally.",
+    ],
+  },
+  code: {
+    query: "python async context manager that retries HTTP 429 with Retry-After header",
+    passages: [
+      "def parse_csv_rows(path: str) -> list[dict]:\n    with open(path) as f:\n        return list(csv.DictReader(f))",
+      "class AsyncRetryClient:\n    async def __aenter__(self): self.s = aiohttp.ClientSession(); return self\n    async def get(self, url):\n        for _ in range(5):\n            r = await self.s.get(url)\n            if r.status != 429: return r\n            await asyncio.sleep(float(r.headers.get('Retry-After', '2')))\n    async def __aexit__(self, *a): await self.s.close()",
+      "HTTP 429 Too Many Requests is defined in RFC 6585 to indicate rate limiting by an origin server.",
+      "async function fetchJson(url) { const res = await fetch(url); return res.json(); }",
+      "import requests\ndef get_with_timeout(url): return requests.get(url, timeout=10).json()",
+    ],
+  },
+  web: {
+    query: "Why does FlashAttention reduce GPU memory usage compared to standard attention?",
+    passages: [
+      "FlashAttention tiles Q, K, and V blocks into fast on-chip SRAM and uses online softmax rescaling so the N x N attention matrix is never materialized in HBM, cutting memory from O(N^2) to O(N).",
+      "Standard multi-head self-attention projects queries, keys, and values through learned linear layers before computing scaled dot products.",
+      "NVIDIA H200 GPUs include 141 GB of HBM3e memory with 4.8 TB/s peak bandwidth.",
+      "Rotary Position Embeddings (RoPE) encode relative token positions by rotating query and key pairs in 2D subspaces.",
+      "ONNX Runtime supports CPU, CUDA, TensorRT, and WebGPU execution providers.",
+    ],
+  },
+};
+
+const $ = (id) => document.getElementById(id);
+const passagesBox = $("passagesBox");
+const textareas = [];
+for (let i = 0; i < 5; i++) {
+  const row = document.createElement("div");
+  row.className = "passage-row";
+  const badge = document.createElement("div");
+  badge.className = "p-idx";
+  badge.textContent = `P${i + 1}`;
+  const ta = document.createElement("textarea");
+  ta.rows = 3;
+  row.append(badge, ta);
+  passagesBox.append(row);
+  textareas.push(ta);
+}
+
+function loadPreset(key) {
+  const p = PRESETS[key];
+  $("queryInput").value = p.query;
+  p.passages.forEach((txt, i) => { textareas[i].value = txt; });
+}
+loadPreset("long");
+
+$("presetLong").onclick = () => loadPreset("long");
+$("presetCode").onclick = () => loadPreset("code");
+$("presetWeb").onclick = () => loadPreset("web");
+
+const cache = {};
+async function loadPair(modelId, dtype) {
+  if (cache[modelId]) return cache[modelId];
+  const device = "gpu" in navigator ? "webgpu" : "wasm";
+  $("status").textContent = `Loading ${modelId} (${device})…`;
+  const tokenizer = await AutoTokenizer.from_pretrained(modelId);
+  let model;
+  try {
+    model = await AutoModelForSequenceClassification.from_pretrained(modelId, { device, dtype });
+  } catch {
+    model = await AutoModelForSequenceClassification.from_pretrained(modelId, { device: "wasm", dtype: "fp32" });
+  }
+  cache[modelId] = { tokenizer, model, device };
+  return cache[modelId];
+}
+
+function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
+
+async function scoreModel(modelId, dtype, maxLen, query, docs) {
+  const { tokenizer, model, device } = await loadPair(modelId, dtype);
+  const t0 = performance.now();
+  const inputs = tokenizer(
+    docs.map(() => query),
+    { text_pair: docs, padding: true, truncation: true, max_length: maxLen }
+  );
+  const out = await model(inputs);
+  const raw = Array.from(out.logits.data);
+  const ms = performance.now() - t0;
+  const ranked = docs.map((text, idx) => ({
+    idx,
+    text,
+    words: text.trim().split(/\s+/).length,
+    logit: raw[idx],
+    prob: sigmoid(raw[idx]),
+  })).sort((a, b) => b.logit - a.logit);
+  return { ranked, ms, device };
+}
+
+function render(el, metaEl, res) {
+  metaEl.textContent = `${res.ms.toFixed(0)} ms · ${res.device}`;
+  el.innerHTML = "";
+  res.ranked.forEach((item, rank) => {
+    const div = document.createElement("div");
+    div.className = "rank-item" + (rank === 0 ? " top" : "");
+    const snippet = item.text.length > 220 ? item.text.slice(0, 120) + " … " + item.text.slice(-95) : item.text;
+    div.innerHTML = `
+      <div class="rank-num">#${rank + 1}</div>
+      <div>
+        <div class="rank-snippet"><strong>P${item.idx + 1}</strong> — ${snippet.replace(/</g, "&lt;")}</div>
+        <div class="rank-sub">${item.words} words · P(rel)=${(item.prob * 100).toFixed(1)}%</div>
+      </div>
+      <div class="score-col">
+        ${item.logit.toFixed(2)}
+        <div class="bar-track"><div class="bar-fill" style="width:${(item.prob * 100).toFixed(1)}%"></div></div>
+      </div>`;
+    el.append(div);
+  });
+}
+
+$("runBtn").onclick = async () => {
+  const btn = $("runBtn");
+  btn.disabled = true;
+  try {
+    const query = $("queryInput").value.trim();
+    const docs = textareas.map((t) => t.value.trim());
+    const resOurs = await scoreModel(MODEL_OURS, "fp16", 8192, query, docs);
+    render($("outOurs"), $("metaOurs"), resOurs);
+    const resMini = await scoreModel(MODEL_MINI, "fp32", 512, query, docs);
+    render($("outMini"), $("metaMini"), resMini);
+    $("status").textContent = `Done. rerank-mini-32m: ${resOurs.ms.toFixed(0)} ms | MiniLM-L6-v2: ${resMini.ms.toFixed(0)} ms.`;
+  } catch (err) {
+    $("status").textContent = `Error: ${err.message || err}`;
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+};
+</script>
+</body>
+</html>

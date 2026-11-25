@@ -32,6 +32,10 @@ def main() -> int:
     load_dotenv()
     parser = argparse.ArgumentParser(description="Dispatch Qwen3-Reranker-8B shard scoring to Vast.ai")
     parser.add_argument("--hf-repo", type=str, default="christianengel/rerank-mini-distill-shards")
+    parser.add_argument("--in-prefix", type=str, default="track_b_unscored")
+    parser.add_argument("--out-prefix", type=str, default="track_b_scored")
+    parser.add_argument("--shard-start", type=int, default=0)
+    parser.add_argument("--shard-end", type=int, default=-1)
     parser.add_argument("--max-length", type=int, default=4096)
     parser.add_argument("--base-batch-size", type=int, default=32)
     parser.add_argument("--max-dph", type=float, default=4.5)
@@ -66,7 +70,7 @@ def main() -> int:
 set -euo pipefail
 cd /workspace
 tar -xzf bundle.tar.gz
-pip install -q -U "transformers>=4.51" "huggingface_hub>=0.30" pyarrow tqdm accelerate
+pip install -q -U "transformers>=4.51,<5.0" "huggingface_hub>=0.30,<1.0" pyarrow tqdm accelerate brotli
 
 python3 - <<'PY'
 import os
@@ -78,16 +82,18 @@ snapshot_download(
     repo_type="dataset",
     token=token,
     local_dir="/workspace/shards",
-    allow_patterns=["track_b_unscored/*.parquet"],
+    allow_patterns=["{args.in_prefix}/*.parquet"],
 )
-print("Downloaded unscored shards:", len(list(Path("/workspace/shards/track_b_unscored").glob("*.parquet"))))
+print("Downloaded unscored shards:", len(list(Path("/workspace/shards/{args.in_prefix}").glob("*.parquet"))))
 PY
 
 PYTHONPATH=/workspace python3 -m rerank_mini.teacher_score \\
-    --input-dir /workspace/shards/track_b_unscored \\
-    --output-dir /workspace/shards/track_b_scored \\
+    --input-dir /workspace/shards/{args.in_prefix} \\
+    --output-dir /workspace/shards/{args.out_prefix} \\
     --hf-repo "{args.hf_repo}" \\
-    --hf-prefix "track_b_scored" \\
+    --hf-prefix "{args.out_prefix}" \\
+    --shard-start {args.shard_start} \\
+    --shard-end {args.shard_end} \\
     --max-length {args.max_length} \\
     --base-batch-size {args.base_batch_size}
 """

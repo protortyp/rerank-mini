@@ -1,0 +1,57 @@
+{
+  "pytorch_fp32_logits": [
+    5.50956,
+    -6.83882,
+    3.16413,
+    -6.57892,
+    -0.99065,
+    -7.62114
+  ],
+  "variants": {
+    "fp32": {
+      "path": "/mnt/nvme1/chris/rerank-mini/ckpts/exp03_local_s2_4k/onnx/model.onnx",
+      "size_mb": 122.45,
+      "max_abs_diff": 5e-06,
+      "mean_abs_diff": 2e-06,
+      "pearson_r": 1.0,
+      "logits": [
+        5.50956,
+        -6.83882,
+        3.16413,
+        -6.57892,
+        -0.99064,
+        -7.62114
+      ]
+    },
+    "fp16": {
+      "path": "/mnt/nvme1/chris/rerank-mini/ckpts/exp03_local_s2_4k/onnx/model_fp16.onnx",
+      "size_mb": 61.48,
+      "max_abs_diff": 0.006256,
+      "mean_abs_diff": 0.002213,
+      "pearson_r": 1.0,
+      "logits": [
+        5.51312,
+        -6.83938,
+        3.16433,
+        -6.58003,
+        -0.98906,
+        -7.61489
+      ]
+    },
+    "int8": {
+      "path": "/mnt/nvme1/chris/rerank-mini/ckpts/exp03_local_s2_4k/onnx/model_int8.onnx",
+      "size_mb": 86.31,
+      "max_abs_diff": 4.853937,
+      "mean_abs_diff": 2.202018,
+      "pearson_r": 0.94368,
+      "logits": [
+        7.87671,
+        -4.65087,
+        3.37282,
+        -1.72499,
+        -1.33722,
+        -4.37333
+      ]
+    }
+  }
+}

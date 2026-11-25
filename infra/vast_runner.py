@@ -159,10 +159,21 @@ class VastClient:
 
     def _req(self, method: str, endpoint: str, **kwargs: Any) -> Any:
         url = f"{VAST_API_BASE}{endpoint}"
-        resp = self.session.request(method, url, timeout=kwargs.pop("timeout", 30), **kwargs)
-        if not resp.ok:
-            raise RuntimeError(f"Vast API {method} {endpoint} failed ({resp.status_code}): {resp.text[:400]}")
-        return resp.json()
+        timeout = kwargs.pop("timeout", 30)
+        for attempt in range(6):
+            resp = self.session.request(method, url, timeout=timeout, **kwargs)
+            if resp.status_code == 429 and attempt < 5:
+                wait_s = 6.0 * (attempt + 1)
+                try:
+                    wait_s = max(wait_s, float(resp.json().get("retry_after", wait_s)) + 1.0)
+                except Exception:
+                    pass
+                time.sleep(wait_s)
+                continue
+            if not resp.ok:
+                raise RuntimeError(f"Vast API {method} {endpoint} failed ({resp.status_code}): {resp.text[:400]}")
+            return resp.json()
+        raise RuntimeError(f"Vast API {method} {endpoint} rate-limited after retries")
 
     def get_credit_usd(self) -> float:
         data = self._req("GET", "/users/current/")

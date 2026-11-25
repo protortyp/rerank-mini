@@ -1,0 +1,219 @@
+{
+  "summary": {
+    "beir_full_7_pytorch_bf16": 0.642677,
+    "beir_full_7_fp32": 0.640727,
+    "msmarco_fp16": 0.646221,
+    "msmarco_delta_fp16_vs_fp32": 0.0,
+    "beir_full_7_int8": 0.612258,
+    "beir_delta_fp32_vs_pt": -0.00195,
+    "beir_delta_int8_vs_fp32": -0.028469,
+    "code_sample_fp32": 0.599682,
+    "code_sample_int8": 0.606926,
+    "code_delta_int8_vs_fp32": 0.007243,
+    "long_sample_fp32": 0.700881,
+    "long_sample_int8": 0.671801,
+    "long_delta_int8_vs_fp32": -0.02908
+  },
+  "tasks": [
+    {
+      "pillar": "beir",
+      "task": "NanoMSMARCO",
+      "num_queries": 50,
+      "num_pairs": 5000,
+      "pytorch_bf16_ndcg10": 0.639164,
+      "fp32_ndcg10": 0.646221,
+      "fp16_ndcg10": 0.646221,
+      "int8_ndcg10": 0.596191,
+      "delta_fp32_vs_pt": 0.007057,
+      "delta_fp16_vs_fp32": 0.0,
+      "delta_int8_vs_fp32": -0.05003,
+      "int8_cpu_pps": 187.3
+    },
+    {
+      "pillar": "beir",
+      "task": "NanoNFCorpus",
+      "num_queries": 20,
+      "num_pairs": 2000,
+      "pytorch_bf16_ndcg10": 0.503649,
+      "fp32_ndcg10": 0.502536,
+      "fp16_ndcg10": null,
+      "int8_ndcg10": 0.485747,
+      "delta_fp32_vs_pt": -0.001113,
+      "delta_fp16_vs_fp32": null,
+      "delta_int8_vs_fp32": -0.016789,
+      "int8_cpu_pps": 26.8
+    },
+    {
+      "pillar": "beir",
+      "task": "NanoFiQA2018",
+      "num_queries": 20,
+      "num_pairs": 2000,
+      "pytorch_bf16_ndcg10": 0.516469,
+      "fp32_ndcg10": 0.498016,
+      "fp16_ndcg10": null,
+      "int8_ndcg10": 0.513559,
+      "delta_fp32_vs_pt": -0.018453,
+      "delta_fp16_vs_fp32": null,
+      "delta_int8_vs_fp32": 0.015543,
+      "int8_cpu_pps": 21.9
+    },
+    {
+      "pillar": "beir",
+      "task": "NanoSciFact",
+      "num_queries": 20,
+      "num_pairs": 2000,
+      "pytorch_bf16_ndcg10": 0.865329,
+      "fp32_ndcg10": 0.865329,
+      "fp16_ndcg10": null,
+      "int8_ndcg10": 0.816284,
+      "delta_fp32_vs_pt": 0.0,
+      "delta_fp16_vs_fp32": null,
+      "delta_int8_vs_fp32": -0.049045,
+      "int8_cpu_pps": 20.8
+    },
+    {
+      "pillar": "beir",
+      "task": "NanoNQ",
+      "num_queries": 20,
+      "num_pairs": 2000,
+      "pytorch_bf16_ndcg10": 0.721292,
+      "fp32_ndcg10": 0.720149,
+      "fp16_ndcg10": null,
+      "int8_ndcg10": 0.685133,
+      "delta_fp32_vs_pt": -0.001143,
+      "delta_fp16_vs_fp32": null,
+      "delta_int8_vs_fp32": -0.035016,
+      "int8_cpu_pps": 53.7
+    },
+    {
+      "pillar": "beir",
+      "task": "NanoHotpotQA",
+      "num_queries": 20,
+      "num_pairs": 2000,
+      "pytorch_bf16_ndcg10": 0.92607,
+      "fp32_ndcg10": 0.92607,
+      "fp16_ndcg10": null,
+      "int8_ndcg10": 0.896223,
+      "delta_fp32_vs_pt": 0.0,
+      "delta_fp16_vs_fp32": null,
+      "delta_int8_vs_fp32": -0.029847,
+      "int8_cpu_pps": 69.6
+    },
+    {
+      "pillar": "beir",
+      "task": "NanoSCIDOCS",
+      "num_queries": 20,
+      "num_pairs": 2000,
+      "pytorch_bf16_ndcg10": 0.326765,
+      "fp32_ndcg10": 0.326765,
+      "fp16_ndcg10": null,
+      "int8_ndcg10": 0.292666,
+      "delta_fp32_vs_pt": 0.0,
+      "delta_fp16_vs_fp32": null,
+      "delta_int8_vs_fp32": -0.034099,
+      "int8_cpu_pps": 29.4
+    },
+    {
+      "pillar": "code",
+      "task": "CoSQA",
+      "num_queries": 25,
+      "num_pairs": 2500,
+      "pytorch_bf16_ndcg10": 0.278653,
+      "fp32_ndcg10": 0.274127,
+      "fp16_ndcg10": null,
+      "int8_ndcg10": 0.318139,
+      "delta_fp32_vs_pt": -0.004526,
+      "delta_fp16_vs_fp32": null,
+      "delta_int8_vs_fp32": 0.044012,
+      "int8_cpu_pps": 88.4
+    },
+    {
+      "pillar": "code",
+      "task": "CodeSearchNet-Python",
+      "num_queries": 25,
+      "num_pairs": 2500,
+      "pytorch_bf16_ndcg10": 0.925237,
+      "fp32_ndcg10": 0.925237,
+      "fp16_ndcg10": null,
+      "int8_ndcg10": 0.895712,
+      "delta_fp32_vs_pt": 0.0,
+      "delta_fp16_vs_fp32": null,
+      "delta_int8_vs_fp32": -0.029525,
+      "int8_cpu_pps": 9.1
+    },
+    {
+      "pillar": "long_context",
+      "task": "MLDR-en",
+      "num_queries": 6,
+      "num_pairs": 180,
+      "pytorch_bf16_ndcg10": 0.833333,
+      "fp32_ndcg10": 0.833333,
+      "fp16_ndcg10": null,
+      "int8_ndcg10": 0.833333,
+      "delta_fp32_vs_pt": 0.0,
+      "delta_fp16_vs_fp32": null,
+      "delta_int8_vs_fp32": 0.0,
+      "int8_cpu_pps": 0.1
+    },
+    {
+      "pillar": "long_context",
+      "task": "LongEmbed-Needle",
+      "num_queries": 6,
+      "num_pairs": 180,
+      "pytorch_bf16_ndcg10": 0.568429,
+      "fp32_ndcg10": 0.568429,
+      "fp16_ndcg10": null,
+      "int8_ndcg10": 0.510268,
+      "delta_fp32_vs_pt": 0.0,
+      "delta_fp16_vs_fp32": null,
+      "delta_int8_vs_fp32": -0.058161,
+      "int8_cpu_pps": 0.2
+    }
+  ],
+  "paired_cpu_4t_short_100": {
+    "minilm_l6_v2_fp32": {
+      "num_pairs": 100,
+      "median_sec": 0.9826,
+      "pairs_per_sec": 101.8,
+      "ms_per_100_pairs": 982.58
+    },
+    "ettin_32m_v1_fp32": {
+      "num_pairs": 100,
+      "median_sec": 1.9378,
+      "pairs_per_sec": 51.6,
+      "ms_per_100_pairs": 1937.83
+    },
+    "rerank_mini_32m_fp32": {
+      "num_pairs": 100,
+      "median_sec": 2.4396,
+      "pairs_per_sec": 41.0,
+      "ms_per_100_pairs": 2439.61
+    },
+    "rerank_mini_32m_int8": {
+      "num_pairs": 100,
+      "median_sec": 1.2373,
+      "pairs_per_sec": 80.8,
+      "ms_per_100_pairs": 1237.32
+    }
+  },
+  "paired_gpu_bf16_short_100": {
+    "minilm_l6_v2": {
+      "num_pairs": 100,
+      "median_sec": 0.0205,
+      "pairs_per_sec": 4873.6,
+      "ms_per_100_pairs": 20.52
+    },
+    "ettin_32m_v1": {
+      "num_pairs": 100,
+      "median_sec": 0.0348,
+      "pairs_per_sec": 2876.0,
+      "ms_per_100_pairs": 34.77
+    },
+    "rerank_mini_32m": {
+      "num_pairs": 100,
+      "median_sec": 0.0325,
+      "pairs_per_sec": 3072.4,
+      "ms_per_100_pairs": 32.55
+    }
+  }
+}

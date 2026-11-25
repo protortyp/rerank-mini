@@ -1,0 +1,29 @@
+{
+  "name": "v2-champ-s2-4k-final",
+  "runs": [
+    {
+      "name": "champ_v2_s2_4k_final",
+      "args": {
+        "backbone": "staging:champ_v2_s1_tau12_e2",
+        "pooling": "cls",
+        "loss": "hybrid",
+        "tau": 1.0,
+        "mse-weight": 0.004,
+        "margin-weight": 0.004,
+        "docs-per-query": 8,
+        "exclude-sources": ["kalm:openorca", "kalm:esci"],
+        "max-length": 4096,
+        "batch-size": 4,
+        "grad-accum": 8,
+        "lr": 2.5e-5,
+        "weight-decay": 0.01,
+        "max-steps": 1400,
+        "long-doc-upsample": 16,
+        "code-upsample": 2,
+        "web-qa-upsample": 2,
+        "grad-checkpointing": true,
+        "log-every": 150
+      }
+    }
+  ]
+}

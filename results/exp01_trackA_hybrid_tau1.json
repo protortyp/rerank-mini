@@ -1,0 +1,119 @@
+{
+  "timestamp_utc": "2026-11-25T00:58:35.819424+00:00",
+  "tag": "exp01-trackA-hybrid-tau1",
+  "model": "/mnt/nvme1/chris/rerank-mini/ckpts/exp01_trackA_hybrid_tau1",
+  "backend": "pytorch",
+  "provider": "cuda",
+  "dtype": "bf16",
+  "max_seq_length": 8192,
+  "num_params": 32031361,
+  "notes": "Local RTX 3090 Track A only (160K queries, 512 tok, hybrid tau=1.0)",
+  "summary": {
+    "beir_ndcg10": 0.574095,
+    "code_ndcg10": 0.630433,
+    "long_context_ndcg10": 0.691129,
+    "overall_ndcg10": 0.631886
+  },
+  "pillars": {
+    "beir": {
+      "NanoMSMARCO": {
+        "ndcg10": 0.58359,
+        "num_pairs": 5000,
+        "elapsed_sec": 2.16,
+        "pairs_per_sec": 2313.6
+      },
+      "NanoNFCorpus": {
+        "ndcg10": 0.341259,
+        "num_pairs": 5000,
+        "elapsed_sec": 6.46,
+        "pairs_per_sec": 774.5
+      },
+      "NanoFiQA2018": {
+        "ndcg10": 0.447441,
+        "num_pairs": 5000,
+        "elapsed_sec": 5.94,
+        "pairs_per_sec": 841.2
+      },
+      "NanoSciFact": {
+        "ndcg10": 0.758654,
+        "num_pairs": 5000,
+        "elapsed_sec": 6.91,
+        "pairs_per_sec": 723.3
+      },
+      "NanoNQ": {
+        "ndcg10": 0.646136,
+        "num_pairs": 5000,
+        "elapsed_sec": 2.91,
+        "pairs_per_sec": 1718.9
+      },
+      "NanoHotpotQA": {
+        "ndcg10": 0.88389,
+        "num_pairs": 5000,
+        "elapsed_sec": 2.97,
+        "pairs_per_sec": 1684.0
+      },
+      "NanoSCIDOCS": {
+        "ndcg10": 0.357694,
+        "num_pairs": 5000,
+        "elapsed_sec": 4.59,
+        "pairs_per_sec": 1088.5
+      }
+    },
+    "code": {
+      "CoSQA": {
+        "ndcg10": 0.231171,
+        "num_pairs": 20000,
+        "elapsed_sec": 7.42,
+        "pairs_per_sec": 2695.5
+      },
+      "CodeSearchNet-Python": {
+        "ndcg10": 0.852212,
+        "num_pairs": 20000,
+        "elapsed_sec": 60.84,
+        "pairs_per_sec": 328.7
+      },
+      "StackOverflow-QA": {
+        "ndcg10": 0.807915,
+        "num_pairs": 20000,
+        "elapsed_sec": 115.22,
+        "pairs_per_sec": 173.6
+      }
+    },
+    "long_context": {
+      "MLDR-en": {
+        "ndcg10": 0.754324,
+        "num_pairs": 4500,
+        "elapsed_sec": 258.93,
+        "pairs_per_sec": 17.4
+      },
+      "LongEmbed-2WikiMQA": {
+        "ndcg10": 0.932064,
+        "num_pairs": 4500,
+        "elapsed_sec": 225.84,
+        "pairs_per_sec": 19.9
+      },
+      "LongEmbed-Needle": {
+        "ndcg10": 0.386998,
+        "num_pairs": 4500,
+        "elapsed_sec": 137.91,
+        "pairs_per_sec": 32.6
+      }
+    }
+  },
+  "latency": {
+    "pytorch_cuda": {
+      "short_100": {
+        "num_pairs": 100,
+        "median_sec": 0.0723,
+        "pairs_per_sec": 1384.1,
+        "ms_per_100_pairs": 72.25
+      },
+      "long_32": {
+        "num_pairs": 32,
+        "median_sec": 0.4371,
+        "pairs_per_sec": 73.2,
+        "ms_per_100_pairs": 1366.02
+      }
+    }
+  }
+}

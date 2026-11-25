@@ -1,0 +1,64 @@
+{
+  "pytorch_fp32_logits": [
+    2.66426,
+    -6.73454,
+    1.6016,
+    -5.89781,
+    -1.9963,
+    -4.8692
+  ],
+  "variants": {
+    "fp32": {
+      "path": "/mnt/nvme1/chris/rerank-mini/ckpts/soup_v3_all5/onnx/model.onnx",
+      "size_mb": 122.45,
+      "max_abs_diff": 3e-06,
+      "mean_abs_diff": 1e-06,
+      "pearson_r": 1.0,
+      "logits": [
+        2.66426,
+        -6.73453,
+        1.6016,
+        -5.89781,
+        -1.9963,
+        -4.8692
+      ]
+    },
+    "fp16": {
+      "path": "/mnt/nvme1/chris/rerank-mini/ckpts/soup_v3_all5/onnx/model_fp16.onnx",
+      "size_mb": 61.48,
+      "max_abs_diff": 0.00206,
+      "mean_abs_diff": 0.000759,
+      "pearson_r": 1.0,
+      "logits": [
+        2.66297,
+        -6.73468,
+        1.60152,
+        -5.89854,
+        -1.99424,
+        -4.86896
+      ]
+    },
+    "int8": {
+      "path": "/mnt/nvme1/chris/rerank-mini/ckpts/soup_v3_all5/onnx/model_int8.onnx",
+      "size_mb": 86.9,
+      "max_abs_diff": 1.186524,
+      "mean_abs_diff": 0.424987,
+      "pearson_r": 0.996328,
+      "logits": [
+        2.78187,
+        -6.44884,
+        1.6725,
+        -4.71129,
+        -1.76607,
+        -4.21024
+      ]
+    }
+  },
+  "gguf": {
+    "status": "ok",
+    "f16_path": "/mnt/nvme1/chris/rerank-mini/ckpts/soup_v3_all5/gguf/rerank-mini-32m-f16.gguf",
+    "f16_size_mb": 62.8,
+    "q8_0_path": "/mnt/nvme1/chris/rerank-mini/ckpts/soup_v3_all5/gguf/rerank-mini-32m-q8_0.gguf",
+    "q8_0_size_mb": 34.17
+  }
+}

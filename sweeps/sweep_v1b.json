@@ -1,0 +1,91 @@
+{
+  "name": "v1b-tau05-and-kl15",
+  "runs": [
+    {
+      "name": "s1_hybrid_tau05_wd02",
+      "args": {
+        "backbone": "jhu-clsp/ettin-encoder-32m",
+        "pooling": "cls",
+        "loss": "hybrid",
+        "tau": 0.5,
+        "mse-weight": 0.005,
+        "margin-weight": 0.005,
+        "docs-per-query": 10,
+        "exclude-sources": ["kalm:openorca", "kalm:esci"],
+        "max-length": 512,
+        "batch-size": 24,
+        "grad-accum": 2,
+        "lr": 1.0e-4,
+        "weight-decay": 0.02,
+        "epochs": 2.0,
+        "code-upsample": 1,
+        "long-doc-upsample": 2,
+        "log-every": 250
+      }
+    },
+    {
+      "name": "s2_hybrid_tau05_4k",
+      "args": {
+        "backbone": "/workspace/ckpts/s1_hybrid_tau05_wd02",
+        "pooling": "cls",
+        "loss": "hybrid",
+        "tau": 0.5,
+        "mse-weight": 0.005,
+        "margin-weight": 0.005,
+        "docs-per-query": 8,
+        "exclude-sources": ["kalm:openorca", "kalm:esci"],
+        "max-length": 4096,
+        "batch-size": 4,
+        "grad-accum": 8,
+        "lr": 2.5e-5,
+        "weight-decay": 0.02,
+        "max-steps": 1800,
+        "long-doc-upsample": 10,
+        "code-upsample": 2,
+        "grad-checkpointing": true,
+        "log-every": 150
+      }
+    },
+    {
+      "name": "s1_kl_tau15_lr15e5",
+      "args": {
+        "backbone": "jhu-clsp/ettin-encoder-32m",
+        "pooling": "cls",
+        "loss": "kl",
+        "tau": 1.5,
+        "docs-per-query": 10,
+        "exclude-sources": ["kalm:openorca", "kalm:esci"],
+        "max-length": 512,
+        "batch-size": 24,
+        "grad-accum": 2,
+        "lr": 1.5e-4,
+        "weight-decay": 0.01,
+        "epochs": 2.0,
+        "code-upsample": 1,
+        "long-doc-upsample": 2,
+        "log-every": 250
+      }
+    },
+    {
+      "name": "s2_kl_tau15_4k",
+      "args": {
+        "backbone": "/workspace/ckpts/s1_kl_tau15_lr15e5",
+        "pooling": "cls",
+        "loss": "kl",
+        "tau": 1.5,
+        "docs-per-query": 8,
+        "exclude-sources": ["kalm:openorca", "kalm:esci"],
+        "max-length": 4096,
+        "batch-size": 4,
+        "grad-accum": 8,
+        "lr": 3e-5,
+        "weight-decay": 0.01,
+        "max-steps": 1800,
+        "long-doc-upsample": 10,
+        "code-upsample": 2,
+        "grad-checkpointing": true,
+        "log-every": 150
+      }
+    }
+  ]
+}

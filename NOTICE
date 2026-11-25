@@ -1,0 +1,20 @@
+rerank-mini-32m
+Copyright 2026 Christian Engel
+
+This product is licensed under the Apache License, Version 2.0.
+
+Upstream models and datasets used during distillation (all Apache-2.0 / MIT):
+- Student backbone: jhu-clsp/ettin-encoder-32m (MIT)
+- Teacher model: Qwen/Qwen3-Reranker-8B (Apache-2.0)
+- Pre-scored permissive subsets: KaLM-Embedding/KaLM-reranker-training-data (MIT;
+  restricted strictly to Apache-2.0 / MIT English splits: gooaq, codefeedback,
+  pubmedqa, openorca, esci, rag-dataset-12000, paq_pairs, triviaqa)
+- Freshly scored long-context, code, tool-use, and web QA subsets:
+  - Shitao/MLDR (MIT)
+  - deepmind/narrativeqa (Apache-2.0)
+  - Nan-Do/code-search-net-python (Apache-2.0)
+  - ise-uiuc/Magicoder-OSS-Instruct-75K (MIT)
+  - glaiveai/glaive-code-assistant-v2 (Apache-2.0)
+  - glaiveai/glaive-function-calling-v2 (Apache-2.0)
+  - sentence-transformers/gooaq (Apache-2.0)
+  - sentence-transformers/paq (MIT)
